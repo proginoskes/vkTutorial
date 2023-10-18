@@ -1,5 +1,6 @@
 
 #include "framework/Drove.hpp"
+#include "framework/DroveWindow.hpp"
 
 const char* NAME = "Drove App";
 const int START_WIDTH = 800;
@@ -40,6 +41,7 @@ int main() {
 
     Drove::Debugger app(
         START_WIDTH, START_HEIGHT,
+        window.createSurface,
         static_cast<uint32_t>(validationLayers.size()),
         validationLayers.data(),
         static_cast<uint32_t>(extensions.size()),
@@ -48,7 +50,7 @@ int main() {
     );
 #else
     Drove::App app(
-        START_WIDTH,START_HEIGHT, NAME,
+        START_WIDTH, START_HEIGHT, NAME, window.getWindowHandle(),
         0, nullptr,
         glfwExtensionCount, glfwExtensions,
         nullptr

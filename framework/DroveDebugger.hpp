@@ -3,8 +3,6 @@
 #include "iDroveInstance.hpp"
 #include "DroveApp.hpp"
 
-#include <vulkan/vulkan.h>
-
 #include <vector>
 #include <iostream>
 #include <cstdint>
@@ -56,6 +54,7 @@ namespace Drove {
 		void resizeFramebuffer(int width, int height);
 		void run();
 		Debugger(int width, int height,
+			std::function<void(VkInstance*, VkSurfaceKHR*)> createSurface,
 			uint32_t layerCount, const char** ppLayers,
 			uint32_t extensionCount, const char** ppExtensions,
 			void* pNext

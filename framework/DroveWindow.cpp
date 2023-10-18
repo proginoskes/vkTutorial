@@ -5,18 +5,19 @@ namespace Drove {
         glfwInit();
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-        hWind = glfwCreateWindow(width, height, name, nullptr, nullptr);
+        window = glfwCreateWindow(width, height, name, nullptr, nullptr);
 
-        glfwSetWindowUserPointer(hWind, this);
-        glfwSetFramebufferSizeCallback(hWind, framebufferResizeCallback);
+        glfwSetWindowUserPointer(window, this);
+        glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 
     }
     Window::~Window() {
-        glfwDestroyWindow(hWind);
+        glfwDestroyWindow(window);
 
         glfwTerminate();
     }
+
     bool Window::shouldClose() {
-        return glfwWindowShouldClose(hWind);
+        return glfwWindowShouldClose(window);
     }
 }

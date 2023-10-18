@@ -54,7 +54,14 @@ namespace Drove {
 		);
 
 		int i = 0;
+		VkBool32 presentSupport = false;
 		for (const VkQueueFamilyProperties& queueFamily : queueFamilies) {
+
+			vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
+			if (presentSupport) {
+				indices.presentFamily = i;
+			}
+			
 			if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
 				indices.graphicsFamily = i;
 			}
@@ -66,26 +73,43 @@ namespace Drove {
 			i++;
 		}
 
+
+
 		return indices;
 	}
 	void App::createLogicalDevice(uint32_t layerCount, const char** ppLayers) {
 		QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
-		VkDeviceQueueCreateInfo queueCreateInfo{};
-		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-		queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
-		queueCreateInfo.queueCount = 1;
+		std::vector<VkDeviceQueueCreateInfo> vQueueCreateInfo;
+		std::set<uint32_t> uniqueQueueFamilies = {
+			indices.graphicsFamily.value(),
+			indices.presentFamily.value()
+		};
 
 		float queuePriority = 1.0f;
-		queueCreateInfo.pQueuePriorities = &queuePriority;
+
+		for (uint32_t queueFamily : uniqueQueueFamilies) {
+			VkDeviceQueueCreateInfo queueCreateInfo{};
+			queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+			queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
+			queueCreateInfo.queueCount = 1;
+			queueCreateInfo.pQueuePriorities = &queuePriority;
+			vQueueCreateInfo.push_back(queueCreateInfo);
+		}
+
 
 		VkPhysicalDeviceFeatures deviceFeatures{}; // for later use 
 
 		VkDeviceCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 
-		createInfo.pQueueCreateInfos = &queueCreateInfo;
-		createInfo.queueCreateInfoCount = 1;
+		createInfo.queueCreateInfoCount = static_cast<uint32_t>(
+			vQueueCreateInfo.size()
+		);
+		createInfo.pQueueCreateInfos = vQueueCreateInfo.data();
+
+		// where?
+		//vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue);
 
 		createInfo.pEnabledFeatures = &deviceFeatures;
 
@@ -99,6 +123,7 @@ namespace Drove {
 		}
 	}
 	App::App(int width, int height, const char* name,
+		std::function<void(VkInstance*, VkSurfaceKHR*)> createSurface,
 		uint32_t layerCount, const char** ppLayers,
 		uint32_t extensionCount, const char** ppExtensions,
 		void* pNext
@@ -127,12 +152,16 @@ namespace Drove {
 			throw std::runtime_error("failed to create instance!");
 		}
 
+		createSurface(&instance, &surface);
+
 		pickPhysicalDevice();
 		createLogicalDevice(layerCount, ppLayers);
 
 	}
 	App::~App() {
-		vkDestroyDevice(device, nullptr); // device and physical device should be in their own class i think
+		vkDestroyDevice(device, nullptr);
+
+		vkDestroySurfaceKHR(instance, surface, nullptr);
 		vkDestroyInstance(instance, nullptr);
 	}
 }
