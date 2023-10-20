@@ -7,6 +7,10 @@
 #include <vector>
 #include <optional>
 #include <set>
+#include <cstdint>
+#include <limits>
+#include <algorithm>
+
 #include <vulkan/vulkan_core.h>
 
 namespace Drove {

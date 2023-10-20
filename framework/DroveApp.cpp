@@ -1,6 +1,4 @@
 #include "DroveApp.hpp"
-#include <cstdint>
-#include <limits>
 #include <vulkan/vulkan_core.h>
 
 namespace Drove {
@@ -70,6 +68,7 @@ namespace Drove {
     VkExtent2D App::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities,
 			std::function<void(int*, int*)> getWindowExtent
         ) {
+
         if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
             return capabilities.currentExtent;
         } else {

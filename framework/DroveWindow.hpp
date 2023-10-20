@@ -4,8 +4,13 @@
 
 #include <GLFW/glfw3.h>
 
-
+#ifndef __GNU_LINUX__
+#define GLFW_EXPOSE_NATIVE_WIN32
+#else
 #define GLFW_EXPOSE_NATIVE_X11
+#endif // !__GNU_LINUX__
+
+
 #include <GLFW/glfw3native.h>
 
 #include <cstdint>
