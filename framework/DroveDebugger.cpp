@@ -63,11 +63,12 @@ namespace Drove {
     }
 
     Debugger::Debugger(int width, int height,
+		std::function<void(int*, int*)> getWindowExtent,
         std::function<void(VkInstance*, VkSurfaceKHR*)> createSurface,
         uint32_t layerCount, const char** ppLayerCount,
         uint32_t extensionCount, const char** ppExtensions,
         void* pNext
-    ) : app(width, height, "Drove Debug App", createSurface,
+    ) : app(width, height, "Drove Debug App", getWindowExtent, createSurface,
         layerCount, ppLayerCount, extensionCount, ppExtensions,
         pNext
     ) {

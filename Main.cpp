@@ -41,6 +41,7 @@ int main() {
 
     Drove::Debugger app(
         START_WIDTH, START_HEIGHT,
+        window.getWindowExtent,
         window.createSurface,
         static_cast<uint32_t>(validationLayers.size()),
         validationLayers.data(),
