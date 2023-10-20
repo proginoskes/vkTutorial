@@ -1,0 +1,7 @@
+**/Drove/
+
+*.sln
+*.proj
+Makefile
+compile_commands.json
+VKTest
