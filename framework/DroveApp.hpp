@@ -1,6 +1,8 @@
 #pragma once
 
 #include "iDroveInstance.hpp"
+#include "DrovePipeline.hpp"
+
 
 #include <iostream>
 #include <stdexcept>
@@ -42,6 +44,12 @@ namespace Drove {
 		VkQueue presentQueue;
 
         VkSwapchainKHR swapChain;
+        std::vector<VkImage> swapChainImages;
+        std::vector<VkImageView> swapChainImageViews;
+        VkFormat swapChainImageFormat;
+        VkExtent2D swapChainExtent;
+        
+        Pipeline* pipeline = nullptr;
 
 		void pickPhysicalDevice();
 		bool isDeviceSuitable(VkPhysicalDevice device);
@@ -58,10 +66,11 @@ namespace Drove {
         VkExtent2D chooseSwapExtent(
                 const VkSurfaceCapabilitiesKHR& capabilities,
 			    std::function<void(int*, int*)> getWindowExtent
-            ); 
+            );  
         void createSwapChain(
                 std::function<void(int*, int*)> getWindowExtent
             );
+        void createImageViews();
     public:
 		App(int width, int height, const char* name,
 			std::function<void(int*, int*)> getWindowExtent,
@@ -74,6 +83,7 @@ namespace Drove {
 
 		void resizeFramebuffer(int width, int height);
 		void run();
+
 
 		VkInstance* getInstance();
 	};
