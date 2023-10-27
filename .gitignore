@@ -1,5 +1,7 @@
 **/Drove/
 
+**/shaders/out/
+
 *.sln
 *.proj
 Makefile
