@@ -16,15 +16,13 @@ namespace Drove {
 
     VkDevice* device;
 
-    VkShaderModule vertShaderModule;
-    VkShaderModule fragShaderModule;
 
+    VkRenderPass renderPass;
     VkPipelineLayout pipelineLayout;
 
-    std::vector<VkDynamicState> dynamicStates = {
-        VK_DYNAMIC_STATE_VIEWPORT,
-        VK_DYNAMIC_STATE_SCISSOR
-    };
+    VkPipeline graphicsPipeline;
+
+    std::vector<VkFramebuffer> swapChainFramebuffers;
 
     static std::vector<char> readFile(const std::string& filename){
         std::ifstream file(filename, std::ios::ate | std::ios::binary);
@@ -47,8 +45,7 @@ namespace Drove {
     VkShaderModule createShaderModule(const std::vector<char>& code);
 
     public:
-    Pipeline(VkDevice* device, 
-            std::function<void(int*, int*)> getWindowExtent,
+    Pipeline(VkDevice* device, std::function<void(int*, int*)> getWindowExtent,
             std::string fragPath, std::string vertPath);
     ~Pipeline();
 

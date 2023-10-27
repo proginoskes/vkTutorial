@@ -3,7 +3,6 @@
 #include "iDroveInstance.hpp"
 #include "DrovePipeline.hpp"
 
-
 #include <iostream>
 #include <stdexcept>
 #include <vector>
@@ -43,11 +42,11 @@ namespace Drove {
 		VkQueue graphicsQueue;
 		VkQueue presentQueue;
 
-        VkSwapchainKHR swapChain;
-        std::vector<VkImage> swapChainImages;
-        std::vector<VkImageView> swapChainImageViews;
-        VkFormat swapChainImageFormat;
-        VkExtent2D swapChainExtent;
+		VkSwapchainKHR swapChain;
+		std::vector<VkImage> swapChainImages;
+		std::vector<VkImageView> swapChainImageViews;
+		VkFormat swapChainImageFormat;
+		VkExtent2D swapChainExtent;
         
         Pipeline* pipeline = nullptr;
 

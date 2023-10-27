@@ -2,6 +2,7 @@
 
 **/shaders/out/
 
+*.spv
 *.sln
 *.proj
 Makefile

@@ -106,7 +106,7 @@ namespace Drove {
 			std::function<void(int*, int*)> getWindowExtent
         ) {
 
-        if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
+        if (capabilities.currentExtent.width != (std::numeric_limits<uint32_t>::max)()) {
             return capabilities.currentExtent;
         } else {
             int width, height;
@@ -359,18 +359,12 @@ namespace Drove {
 		createLogicalDevice(layerCount, ppLayers);
         createSwapChain(getWindowExtent);
         createImageViews();
-        pipeline = new Pipeline(&device, getWindowExtent, "./shaders/vert.spv", "./shaders/frag.spv");
+        pipeline = new Pipeline(&device, getWindowExtent,
+            "C:/Users/kouck/CodeProjects/Local/DroveVulkan/shaders/out/frag.spv", 
+            "C:/Users/kouck/CodeProjects/Local/DroveVulkan/shaders/out/vert.spv");
 	}
 	App::~App() {
         delete pipeline;
-        
-        for (VkImageView imageView : swapChainImageViews){
-            vkDestroyImageView(
-                    device, imageView, nullptr
-                );
-        }
-
-        vkDestroySwapchainKHR(device, swapChain, nullptr);
 
 		vkDestroyDevice(device, nullptr);
 
