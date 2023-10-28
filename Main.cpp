@@ -17,7 +17,7 @@ int main() {
         &glfwExtensionCount
     );
 
-    Drove::App app(glfwExtensionCount, glfwExtensions);
+    Drove::App app(glfwExtensionCount, glfwExtensions, window.createSurface);
 
     try {
         //app.run();

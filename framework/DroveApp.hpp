@@ -18,9 +18,15 @@
 #include <cstdint>
 #include <limits>
 #include <algorithm>
-
+#include <cstring>
 
 namespace Drove {
+    VkResult CreateDebugUtilsMessengerEXT(
+                VkInstance instance, 
+                const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, 
+                const VkAllocationCallbacks* pAllocator, 
+                VkDebugUtilsMessengerEXT* pDebugMessenger
+            );
 	class App {
 	private:
 		VkInstance instance;
@@ -28,20 +34,17 @@ namespace Drove {
 		VkSurfaceKHR surface;
 
 
-		static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
+		static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+                VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, 
+                VkDebugUtilsMessageTypeFlagsEXT messageType, 
+                const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, 
+                void* pUserData
+            ) {
 			std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
 
 			return VK_FALSE;
 		}
-		VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) {
-			auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
-			if (func != nullptr) {
-				return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
-			} else {
-				return VK_ERROR_EXTENSION_NOT_PRESENT;
-			}
-		}
-		
+			
 		const std::vector<const char*> validationLayers = {
 			"VK_LAYER_KHRONOS_validation"
 		};
