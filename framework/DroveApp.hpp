@@ -1,8 +1,15 @@
 #pragma once
 
-#include "iDroveInstance.hpp"
-#include "DrovePipeline.hpp"
 
+#if _WIN32
+#define VK_USE_PLATFORM_WIN32_KHR
+#else
+#define VK_USE_PLATFORM_X11_KHR
+#endif
+
+#include <vulkan/vulkan.h>
+
+#include <functional>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
@@ -12,78 +19,55 @@
 #include <limits>
 #include <algorithm>
 
-#include <vulkan/vulkan_core.h>
 
 namespace Drove {
-	struct QueueFamilyIndices {
-		std::optional<uint32_t> graphicsFamily;
-		std::optional<uint32_t> presentFamily;
-		bool isComplete() {
-			return graphicsFamily.has_value()
-				&& presentFamily.has_value();
-		}
-	};
-    struct SwapChainSupportDetails {
-        VkSurfaceCapabilitiesKHR capabilities;
-        std::vector<VkSurfaceFormatKHR> formats;
-        std::vector<VkPresentModeKHR> presentModes;
-    };
-    const std::vector<const char*> deviceExtensions = {
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME
-    };
-	class App : public Instance {
+	class App {
 	private:
 		VkInstance instance;
+		VkDebugUtilsMessengerEXT debugMessenger;
 		VkSurfaceKHR surface;
 
-		VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-		VkDevice device;
 
-		VkQueue graphicsQueue;
-		VkQueue presentQueue;
+		static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
+			std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
 
-		VkSwapchainKHR swapChain;
-		std::vector<VkImage> swapChainImages;
-		std::vector<VkImageView> swapChainImageViews;
-		VkFormat swapChainImageFormat;
-		VkExtent2D swapChainExtent;
-        
-        Pipeline* pipeline = nullptr;
+			return VK_FALSE;
+		}
+		VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) {
+			auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+			if (func != nullptr) {
+				return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
+			} else {
+				return VK_ERROR_EXTENSION_NOT_PRESENT;
+			}
+		}
+		
+		const std::vector<const char*> validationLayers = {
+			"VK_LAYER_KHRONOS_validation"
+		};
 
-		void pickPhysicalDevice();
-		bool isDeviceSuitable(VkPhysicalDevice device);
-		QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-		void createLogicalDevice(uint32_t layerCount, const char** ppLayers);
-        bool checkDeviceExtensionSupport(VkPhysicalDevice device);
-        SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
-	    VkSurfaceFormatKHR chooseSwapSurfaceFormat(
-                const std::vector<VkSurfaceFormatKHR>& availableFormats
-            ); 	
-        VkPresentModeKHR chooseSwapPresentMode(
-                const std::vector<VkPresentModeKHR>& availablePresentModes
-            );
-        VkExtent2D chooseSwapExtent(
-                const VkSurfaceCapabilitiesKHR& capabilities,
-			    std::function<void(int*, int*)> getWindowExtent
-            );  
-        void createSwapChain(
-                std::function<void(int*, int*)> getWindowExtent
-            );
-        void createImageViews();
+		bool checkValidationLayerSupport();
+
+		void createInstance(uint32_t extensionCount, const char** extensions);
+		
+		// debug stuff
+#ifndef NDEBUG
+		void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+		void setupDebugMessenger();
+#endif
+
     public:
-		App(int width, int height, const char* name,
-			std::function<void(int*, int*)> getWindowExtent,
-			std::function<void(VkInstance*, VkSurfaceKHR*)> createSurface,
-			uint32_t layerCount, const char** ppLayers,
-			uint32_t extensionCount, const char** ppExtensions,
-			void* pNext
+		App(uint32_t extensionCount, const char** extensions, 
+			std::function<void(VkInstance*, VkSurfaceKHR*)> createSurface
 		);
 		~App();
 
+		/*
 		void resizeFramebuffer(int width, int height);
 		void run();
 
 
 		VkInstance* getInstance();
+		*/
 	};
 }

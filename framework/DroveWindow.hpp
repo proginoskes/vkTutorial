@@ -4,7 +4,7 @@
 
 #include <GLFW/glfw3.h>
 
-#ifdef _WIN32
+#if _WIN32
 #define GLFW_EXPOSE_NATIVE_WIN32
 #else
 #define GLFW_EXPOSE_NATIVE_X11
@@ -24,7 +24,7 @@ namespace Drove {
 		static void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
 			App* app = reinterpret_cast<App*>(glfwGetWindowUserPointer(window));
 			// maybe put loop here with app->pause?
-			app->resizeFramebuffer(width, height);
+			//app->resizeFramebuffer(width, height);
 		}
         
 	public:
