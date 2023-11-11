@@ -26,6 +26,15 @@ namespace Drove {
 			// maybe put loop here with app->pause?
 			//app->resizeFramebuffer(width, height);
 		}
+
+		std::function<void(VkInstance*, VkSurfaceKHR*)> createSurface = [this](
+                VkInstance* instance, VkSurfaceKHR* surface
+        ) {
+			if (glfwCreateWindowSurface(*instance, window, nullptr, surface) != VK_SUCCESS) {
+				throw std::runtime_error("failed to create window surface!");
+			}
+		};
+
         
 	public:
 		Window(int width, int height, const char* name);
@@ -36,14 +45,7 @@ namespace Drove {
                 glfwGetFramebufferSize(window, pWidth, pHeight);
         };
 		
-		std::function<void(VkInstance*, VkSurfaceKHR*)> createSurface = [this](
-                VkInstance* instance, VkSurfaceKHR* surface
-        ) {
-			if (glfwCreateWindowSurface(*instance, window, nullptr, surface) != VK_SUCCESS) {
-				throw std::runtime_error("failed to create window surface!");
-			}
-		};
-		
+		std::function<void(VkInstance*, VkSurfaceKHR*)> getCreateSurface();
 
 		bool shouldClose();
 	};

@@ -18,9 +18,10 @@ namespace Drove {
             const VkAllocationCallbacks* pAllocator, 
             VkDebugUtilsMessengerEXT* pDebugMessenger
         ){
-        auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
+        PFN_vkCreateDebugUtilsMessengerEXT func = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(
                 instance, "vkCreateDebugUtilsMessengerEXT"
-            );
+            ));
+
         if (func != nullptr) {
             return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
         } else {
@@ -35,7 +36,7 @@ namespace Drove {
         std::vector<VkLayerProperties> availableLayers(layerCount);
         vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
-        for (const char* layerName : validationLayers) {
+        for (const char* layerName : Constants::validationLayers) {
             bool layerFound = false;
 
             for (const auto& layerProperties : availableLayers) {
@@ -72,19 +73,28 @@ namespace Drove {
         createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         createInfo.pApplicationInfo = &appInfo;
 
-        createInfo.enabledExtensionCount = extensionCount;
-        createInfo.ppEnabledExtensionNames = extensions;
 
 #ifndef NDEBUG
+            std::vector<const char*> actExtensions(
+                extensions, extensions + extensionCount
+            );
+
+            actExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+
+            createInfo.enabledExtensionCount = actExtensions.size();
+            createInfo.ppEnabledExtensionNames = actExtensions.data();
+            
             VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
-            createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-            createInfo.ppEnabledLayerNames = validationLayers.data();
+            createInfo.enabledLayerCount = static_cast<uint32_t>(Constants::validationLayers.size());
+            createInfo.ppEnabledLayerNames = Constants::validationLayers.data();
 
             populateDebugMessengerCreateInfo(debugCreateInfo);
             createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
 #else
-            createInfo.enabledLayerCount = 0;
-            createInfo.pNext = nullptr;
+        createInfo.enabledExtensionCount = extensionCount;
+        createInfo.ppEnabledExtensionNames = extensions;
+        createInfo.enabledLayerCount = 0;
+        createInfo.pNext = nullptr;
 #endif
 
         if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
@@ -126,13 +136,16 @@ namespace Drove {
     ) {
         createInstance(extensionCount, extensions);
         createSurface(&instance, &surface);
+        device = new Device(&instance, &surface);
 	}
     App::~App() {
 
+        delete device;
+
 #ifndef NDEBUG
-        DestroyDebugUtilsMessengerEXT(instance,
-                debugMessenger, nullptr
-            ); 
+            DestroyDebugUtilsMessengerEXT(instance,
+                    debugMessenger, nullptr
+                ); 
 #endif
 
         vkDestroySurfaceKHR(instance, surface, nullptr);

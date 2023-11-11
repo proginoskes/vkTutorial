@@ -17,6 +17,10 @@ namespace Drove {
         glfwTerminate();
     }
 
+    std::function<void(VkInstance*, VkSurfaceKHR*)> Window::getCreateSurface() {
+        return createSurface;
+    }
+
     bool Window::shouldClose() {
         return glfwWindowShouldClose(window);
     }

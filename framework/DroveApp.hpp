@@ -7,7 +7,11 @@
 #define VK_USE_PLATFORM_X11_KHR
 #endif
 
+
 #include <vulkan/vulkan.h>
+
+#include "DroveConstants.hpp"
+#include "DroveDevice.hpp"
 
 #include <functional>
 #include <iostream>
@@ -33,6 +37,7 @@ namespace Drove {
 		VkDebugUtilsMessengerEXT debugMessenger;
 		VkSurfaceKHR surface;
 
+		Device* device;
 
 		static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
                 VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, 
@@ -45,10 +50,6 @@ namespace Drove {
 			return VK_FALSE;
 		}
 			
-		const std::vector<const char*> validationLayers = {
-			"VK_LAYER_KHRONOS_validation"
-		};
-
 		bool checkValidationLayerSupport();
 
 		void createInstance(uint32_t extensionCount, const char** extensions);
